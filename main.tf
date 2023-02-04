@@ -95,7 +95,7 @@ resource "azuread_application" "main" {
   }
 
   dynamic "web" {
-    for_each = var.web != null ? ["true"] : []
+    
     for_each = can(local.input.web)  ? local.input.web : []
     content {
       redirect_uris = lookup(var.web, "redirect_uris", null)

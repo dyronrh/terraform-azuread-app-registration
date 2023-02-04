@@ -145,7 +145,7 @@ variable "homepage_url" {
   type        = string
   default     = null
   validation {
-    condition     = can(regex("^https?://", var.single_page_application)) 
+    condition     = can(regex("^https?://", var.homepage_url)) 
     error_message = "This atribute homepage_url must be  https protocol."
   }
 }
@@ -155,7 +155,7 @@ variable "logout_url" {
   type        = string
   default     = null
   validation {
-    condition     = can(regex("^https?://", var.single_page_application)) 
+    condition     = can(regex("^https?://", var.logout_url)) 
     error_message = "This atribute logout_url must be  https protocol."
   }
 }
@@ -165,7 +165,7 @@ variable "redirect_uris" {
   type        = string
   default     = null
   validation {
-    condition     = can(regex("^https?://", var.single_page_application)) 
+    condition     = can(regex("^https?://", var.redirect_uris)) 
     error_message = "This atribute redirect_uris must be  https protocol."
   }
 }

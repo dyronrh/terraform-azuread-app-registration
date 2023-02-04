@@ -13,7 +13,7 @@ output "az_logo_url" {
   value       = azuread_application.main.logo_url
 }
 
-output az_"disabled_by_microsoft" {
+output "az_disabled_by_microsoft" {
   description = "Whether Microsoft has disabled the registered application. If the application is disabled, this will be a string indicating the status/reason, e.g. DisabledDueToViolationOfServicesAgreement."
   value       = azuread_application.main.disabled_by_microsoft
 }
