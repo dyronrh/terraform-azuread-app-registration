@@ -103,11 +103,6 @@ variable "single_page_application" {
   description = "(Optional) A single_page_application block as documented below, which configures single-page application (SPA) related settings for this application. Must be https."
   type        = any
   default     = null
-
-  validation {
-    condition     = can(regex("^https?://", var.single_page_application)) 
-    error_message = "This register SPA can only accept https protocol."
-  }
 }
 
 variable "support_url" {
@@ -144,10 +139,6 @@ variable "homepage_url" {
   description = " (Optional) Home page or landing page of the application."
   type        = string
   default     = null
-  validation {
-    condition     = can(regex("^https?://", var.homepage_url)) 
-    error_message = "This atribute homepage_url must be  https protocol."
-  }
 }
 
 variable "logout_url" {
@@ -164,8 +155,5 @@ variable "redirect_uris" {
   description = "(Optional) A set of URLs where user tokens are sent for sign-in, or the redirect URIs where OAuth 2.0 authorization codes and access tokens are sent. Must be a valid http URL or a URN."
   type        = string
   default     = null
-  validation {
-    condition     = can(regex("^https?://", var.redirect_uris)) 
-    error_message = "This atribute redirect_uris must be  https protocol."
-  }
+
 }
