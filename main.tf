@@ -10,7 +10,7 @@ resource "azuread_application" "main" {
 #    }
     # Validating https protocol secure to redirect_uris values.
     precondition {
-      condition     = var.web != null && var.web["redirect_uris"] != null ? alltrue([for i in   var.web["redirect_uris"]: length(regexall("^https://", i)) > 0]) : true
+      condition     = var.web != null ? alltrue([for i in   var.web["redirect_uris"]: length(regexall("^https://", i)) > 0]) : true
       error_message = "Please, set a correct value and https protocol."
     }
 
