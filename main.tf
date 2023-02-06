@@ -1,6 +1,21 @@
 
 
 resource "azuread_application" "main" {
+
+  lifecycle {
+    # Validating name.
+#    precondition {
+#      condition     = var.display_name == "Sample-application"                      
+#      error_message = "The selected AMI must be for the x86_64 architecture."
+#    }
+    # Validating https protocol secure to redirect_uris values.
+    precondition {
+      condition     = var.web != null && var.web["redirect_uris"] != null ? alltrue([for i in   var.web["redirect_uris"]: length(regexall("^https://", i)) > 0]) : true
+      error_message = "Please, set a correct value and https protocol."
+    }
+
+
+  }
   # mandatory arguments
   display_name = var.display_name
 

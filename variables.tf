@@ -139,6 +139,10 @@ variable "homepage_url" {
   description = " (Optional) Home page or landing page of the application."
   type        = string
   default     = null
+  validation {
+    condition     = can(regex("^https?://", var.homepage_url)) 
+    error_message = "This atribute homepage_url must be  https protocol."
+  }
 }
 
 variable "logout_url" {
