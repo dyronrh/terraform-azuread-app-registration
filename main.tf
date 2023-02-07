@@ -1,4 +1,11 @@
 
+resource "random_uuid" "random_id" {
+  count = 10
+}
+
+resource "random_uuid" "random_role_id" {
+  count = 10
+}
 
 resource "azuread_application" "main" {
 
@@ -13,9 +20,8 @@ resource "azuread_application" "main" {
       condition     = var.web != null ? alltrue([for i in   var.web["redirect_uris"]: length(regexall("^https://", i)) > 0]) : true
       error_message = "Please, set a correct value and https protocol."
     }
-
-
   }
+
   # mandatory arguments
   display_name = var.display_name
 
@@ -39,7 +45,6 @@ resource "azuread_application" "main" {
   dynamic "optional_claims" {
     for_each = var.optional_claims != null ? ["true"] : []
     content {
-
       dynamic "access_token" {
         for_each = lookup(var.optional_claims, "access_token", [])
         content {
@@ -110,13 +115,11 @@ resource "azuread_application" "main" {
   }
 
   dynamic "web" {
-    
     for_each = var.web != null ? ["true"] : []
     content {
       redirect_uris = lookup(var.web, "redirect_uris", null)
       homepage_url  = lookup(var.web, "homepage_url", null)
       logout_url    = lookup(var.web, "logout_url", null)
-
       dynamic "implicit_grant" {
         for_each = lookup(var.web, "implicit_grant", null) != null ? [1] : []
         content {
@@ -129,22 +132,21 @@ resource "azuread_application" "main" {
 
   dynamic "app_role" {
     for_each = var.app_role != null ? var.app_role : []
+    iterator = role
     content {
-      allowed_member_types = app_role.value.allowed_member_types
-      description          = app_role.value.description
-      display_name         = app_role.value.display_name
-      enabled              = lookup(app_role.value, "enabled", true)
-      id                   = app_role.value.id
-      value                = lookup(app_role.value, "value", null)
+      allowed_member_types = role.value.allowed_member_types
+      description          = role.value.description
+      display_name         = role.value.display_name
+      enabled              = lookup(role.value, "enabled", true)
+      id                   =  role.value.id == "generate" ? element(random_uuid.random_role_id[*].result, role.key) : lookup(role.value, "id", null)
+      value                = lookup(role.value, "value", null)
     }
   }
 
   dynamic "required_resource_access" {
     for_each = var.required_resource_access != null ? var.required_resource_access : []
-
     content {
       resource_app_id = required_resource_access.value.resource_app_id
-
       dynamic "resource_access" {
         for_each = required_resource_access.value.resource_access
         iterator = access
