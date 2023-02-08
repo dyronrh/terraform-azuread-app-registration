@@ -1,3 +1,5 @@
+data "azurerm_client_config" "current" {}
+
 
 resource "random_uuid" "random_id" {
   count = 10

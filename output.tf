@@ -2,7 +2,9 @@ output "object_id" {
   description = "The application's object ID."
   value       = azuread_application.main.object_id
 }
-
+output "tenant_id" {
+  value = data.azurerm_client_config.current.object_id
+}
 output "client_id" {
   description = "The Application ID (also called Client ID)."
   value       = azuread_application.main.application_id
