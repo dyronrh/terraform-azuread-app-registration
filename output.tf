@@ -11,3 +11,8 @@ output "tenant_id" {
 output "client_id" {
   value = data.azuread_client_config.current.client_id
 }
+
+output "redirect_uris" {
+  description = "The application'sredirect redirect_uris."
+  value       = azuread_application.main.redirect_uris
+}
