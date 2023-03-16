@@ -12,7 +12,7 @@ output "client_id" {
   value = data.azuread_client_config.current.client_id
 }
 
-output "redirect_uris" {
-  description = "The application'sredirect redirect_uris."
-  value       = azuread_application.main.redirect_uris
+output "single_spa_redirect_uris" {
+  description = "The application's redirect redirect_uris."
+  value = azuread_application.main.single_page_application.redirect_uris != null ? azuread_application.main.single_page_application.redirect_uris : null
 }
