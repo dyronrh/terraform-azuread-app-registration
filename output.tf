@@ -14,5 +14,5 @@ output "client_id" {
 
 output "single_spa_redirect_uris" {
   description = "The application's redirect redirect_uris."
-  value = azuread_application.main.single_page_application.redirect_uris != null ? azuread_application.main.single_page_application.redirect_uris : null
+  value = azuread_application.main.single_page_application[0].redirect_uris != null ? azuread_application.main.single_page_application[0].redirect_uris : null
 }
