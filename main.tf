@@ -17,14 +17,14 @@ output "all_rgroups" {
 
 
 locals {
-  groups_r = tomap([
+  groups_r = [
             for group, roles in var.group_names : [
               for role in roles : {
                 role_id  = contains([azuread_application.main.app_role.*.display_name], role ) ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role][0] : null 
                 group_id = contains([for s in data.azuread_group.example :  s.display_name], group ) ? [for az_group in data.azuread_group.example : az_group.id if az_group.display_name == group][0] : null 
               }
             ]
-          ])
+          ]
 }
 
 resource "random_uuid" "random_id" {
