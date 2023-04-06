@@ -5,6 +5,10 @@ data "azuread_group" "example" {
   for_each = toset(keys(var.group_names))
   display_name       = each.value
   security_enabled = true
+
+   depends_on = [
+     azuread_application.main
+  ]
 }
 
 output "all_resource_ids" {
