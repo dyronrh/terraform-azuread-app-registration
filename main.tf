@@ -189,8 +189,8 @@ resource "azuread_app_role_assignment" "example" {
   for_each            = {for i,v in local.groups_r: i=>v}
   #for_each = flatten(local.groups_r)
 
-    app_role_id         = each.value[0]
-    principal_object_id =  each.value[1]
+    app_role_id         = each.value[0].role_id
+    principal_object_id =  each.value[1].group_id
     resource_object_id  = azuread_application.main.id
 
    depends_on = [
