@@ -1,14 +1,14 @@
 data "azuread_client_config" "current" {}
 
+
 data "azuread_group" "example" {
-  for_each = toset(var.group_names)
+  for_each = toset(keys(var.group_names))
   display_name       = each.value
   security_enabled = true
 }
 
-
 output "all_resource_ids" {
-  value =  [for s in data.azuread_group.example : s.id]
+  value =  {for s in data.azuread_group.example : s.id =>  s.display_name}
 }
 
 
@@ -17,7 +17,7 @@ locals {
             for group, roles in var.group_names : [
               for role in roles : {
                 role_id  = contains([azuread_application.main.app_role.*.display_name], role ) ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role][0] : null 
-                group_id = contains([data.azuread_group.example], group ) ? [for az_group in data.azuread_group.example : az_group.id if az_group.display_name == group][0] : null 
+                group_id = contains([data.azuread_group.example.*.display_name], group ) ? [for az_group in data.azuread_group.example : az_group.id if az_group.display_name == group][0] : null 
               }
             ]
           ])
