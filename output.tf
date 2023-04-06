@@ -31,3 +31,18 @@ output "azure_redirect_uri_public_client" {
   value = length(azuread_application.main.public_client.*.redirect_uris)  > 0 ? azuread_application.main.public_client.*.redirect_uris : null
 }
 
+output "azure_app_roles" {
+  value = data.azuread_application.main.app_role.*
+}
+
+output "azure_roles_group" {
+  description = "The application's roles in groups."
+  value = flatten([
+            for group, roles in var.group_names : [
+              for role in roles : {
+                role_id  = contains([azuread_application.main.app_role.*.display_name], role ) ? (for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role) : null 
+                group_id = contains([data.azuread_group.example], group ) ? (for az_group in data.azuread_group.example : az_group.id if az_group.display_name == group) : null 
+              }
+            ]
+          ])
+}

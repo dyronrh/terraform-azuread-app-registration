@@ -1,8 +1,22 @@
 data "azuread_client_config" "current" {}
 
+data "azuread_group" "example" {
+  for_each = toset(var.group_name)
+  display_name       = each.value
+  security_enabled = true
+}
+
+
+output "all_resource_ids" {
+  value =  [for s in data.azuread_group.example : s.id]
+}
+
+
+
 resource "random_uuid" "random_id" {
   count = 10
 }
+
 
 resource "random_uuid" "random_role_id" {
   count = 10
@@ -150,6 +164,19 @@ resource "azuread_application" "main" {
 
 
 
+
+
+resource "azuread_app_role_assignment" "example" {
+  for_each = output.azure_roles_group
+
+    app_role_id         = each.value.role_id
+    principal_object_id = each.value.group_id
+    resource_object_id  = azuread_application.main.id
+
+   depends_on = [
+    azuread_application.main
+ ]
+}
 
 
 
