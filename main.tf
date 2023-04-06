@@ -186,7 +186,7 @@ resource "azuread_application" "main" {
 
 resource "azuread_app_role_assignment" "example" {
   #for_each = output.azure_roles_group
-  for_each = tomap(local.groups_r)
+  for_each = flatten(local.groups_r)
 
     app_role_id         = each.value.role_id != null && each.value.group_id != null ? each.value.role_id : null
     principal_object_id =  each.value.role_id != null && each.value.group_id != null ? each.value.group_id : null
