@@ -184,18 +184,18 @@ resource "azuread_application" "main" {
 
 
 
-// resource "azuread_app_role_assignment" "example" {
-//   #for_each = output.azure_roles_group
-//   for_each = [local.groups_r]
+resource "azuread_app_role_assignment" "example" {
+  #for_each = output.azure_roles_group
+  for_each = local.groups_r
 
-//     app_role_id         = each.value.role_id
-//     principal_object_id = each.value.group_id
-//     resource_object_id  = azuread_application.main.id
+    app_role_id         = each.value.role_id != null && each.value.group_id != null ? each.value.role_id : null
+    principal_object_id =  each.value.role_id != null && each.value.group_id != null ? each.value.group_id : null
+    resource_object_id  = azuread_application.main.id
 
-//    depends_on = [
-//     azuread_application.main
-//  ]
-// }
+   depends_on = [
+    azuread_application.main
+ ]
+}
 
 
 
