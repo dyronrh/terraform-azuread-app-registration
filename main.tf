@@ -1,7 +1,7 @@
 data "azuread_client_config" "current" {}
 
 data "azuread_group" "example" {
-  for_each = toset(var.group_name)
+  for_each = toset(var.group_names)
   display_name       = each.value
   security_enabled = true
 }

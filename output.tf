@@ -32,7 +32,7 @@ output "azure_redirect_uri_public_client" {
 }
 
 output "azure_app_roles" {
-  value = data.azuread_application.main.app_role.*
+  value = azuread_application.main.app_role.*
 }
 
 output "azure_roles_group" {
