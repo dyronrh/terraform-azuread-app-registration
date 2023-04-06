@@ -11,9 +11,13 @@ output "all_resource_ids" {
   value =  {for s in data.azuread_group.example : s.id =>  s.display_name}
 }
 
+output "all_rgroups" {
+  value =  local.groups_r
+}
+
 
 locals {
-  groups_r = flatten([
+  groups_r = tomap([
             for group, roles in var.group_names : [
               for role in roles : {
                 role_id  = contains([azuread_application.main.app_role.*.display_name], role ) ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role][0] : null 
@@ -178,7 +182,7 @@ resource "azuread_application" "main" {
 
 resource "azuread_app_role_assignment" "example" {
   #for_each = output.azure_roles_group
-  for_each = toset(local.groups_r)
+  for_each = [local.groups_r]
 
     app_role_id         = each.value.role_id
     principal_object_id = each.value.group_id
