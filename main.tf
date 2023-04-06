@@ -21,14 +21,14 @@ output "all_rgroups" {
 
 
 locals {
-  groups_r = [
-            for group, roles in var.group_names : [
+  groups_r = {
+            for group, roles in var.group_names : {
               for role in roles : {
                 role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
                 group_id = contains([for s in data.azuread_group.example :  s.display_name], group ) ? [for az_group in data.azuread_group.example : az_group.id if az_group.display_name == group][0] : null 
               }
-            ]
-          ]
+            }
+  }
 }
 
 resource "random_uuid" "random_id" {
@@ -186,7 +186,7 @@ resource "azuread_application" "main" {
 
 resource "azuread_app_role_assignment" "example" {
   #for_each = output.azure_roles_group
-  for_each = toset(local.groups_r)
+  for_each = tomap(local.groups_r)
 
     app_role_id         = each.value.role_id != null && each.value.group_id != null ? each.value.role_id : null
     principal_object_id =  each.value.role_id != null && each.value.group_id != null ? each.value.group_id : null
