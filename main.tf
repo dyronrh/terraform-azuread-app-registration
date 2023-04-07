@@ -181,7 +181,9 @@ resource "azuread_application" "main" {
 }
 
 
-
+resource "azuread_service_principal" "internal" {
+  application_id = azuread_application.main.application_id
+}
 
 
 resource "azuread_app_role_assignment" "example" {
@@ -191,7 +193,7 @@ resource "azuread_app_role_assignment" "example" {
 
     app_role_id         = each.value.role_id != null ?  each.value.role_id : "432e4502-173f-4152-8176-zzzzzzzzzzzzs"
     principal_object_id = each.value.group_id
-    resource_object_id  = data.azuread_client_config.current.object_id
+    resource_object_id  = azuread_service_principal.internal.object_id
 
    depends_on = [
     azuread_application.main
