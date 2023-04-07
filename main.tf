@@ -12,7 +12,7 @@ data "azuread_group" "example" {
 }
 
 output "all_resource_ids" {
-  value =  {for s in data.azuread_group.example : s.id =>  s.display_name}
+  value =  {for s in data.azuread_group.example : s.object_id =>  s.display_name}
 }
 
 output "all_rgroups" {
@@ -190,8 +190,8 @@ resource "azuread_app_role_assignment" "example" {
   #for_each = toset(local.groups_r[0])
 
     app_role_id         = each.value.role_id != null ?  each.value.role_id : "432e4502-173f-4152-8176-zzzzzzzzzzzzs"
-    principal_object_id =  each.value.group_id
-    resource_object_id  = azuread_application.main.id
+    principal_object_id = each.value.group_id
+    resource_object_id  = data.azuread_client_config.current.object_id
 
    depends_on = [
     azuread_application.main
