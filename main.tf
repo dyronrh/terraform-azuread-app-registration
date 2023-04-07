@@ -186,8 +186,8 @@ resource "azuread_application" "main" {
 
 resource "azuread_app_role_assignment" "example" {
   #for_each = output.azure_roles_group
-  #for_each            = {for i,v in local.groups_r: i=>v}
-  for_each = toset(local.groups_r[0])
+  for_each            = {for i,v in local.groups_r[0]: i=>v}
+  #for_each = toset(local.groups_r[0])
 
     app_role_id         = each.value.role_id != null ?  each.value.role_id : "432e4502-173f-4152-8176-zzzzzzzzzzzzs"
     principal_object_id =  each.value.group_id
