@@ -11,7 +11,8 @@ data "azuread_group" "main" {
   ]
 }
 
-  association-map = merge([
+ output association-map {
+  value = merge([
     for user, policies in var.iam-user-policy-map : {
       for policy in policies :
         "${user}-${policy}" => {
@@ -20,7 +21,7 @@ data "azuread_group" "main" {
         }
     }
   ]...)
-
+}
 output "association-map" {
   value = local.association-map
 }
