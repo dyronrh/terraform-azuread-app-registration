@@ -211,8 +211,10 @@ resource "azuread_service_principal" "internal" {
 resource "azuread_app_role_assignment" "example" {
   #for_each = output.azure_roles_group
   #for_each            = {for i,v in local.groups_r: i=>v}
+  count = length(local.group_list_map)
+  target_resource_id = local.group_list_map[count.index]
 
-    for_each = tomap(local.group_list_map)
+    for_each = local.group_list_map
 
 
   #for_each = toset(local.groups_r[0])
@@ -222,7 +224,9 @@ resource "azuread_app_role_assignment" "example" {
     resource_object_id  = azuread_service_principal.internal.object_id
 
    depends_on = [
-    azuread_application.main
+    azuread_application.main,
+    data.azuread_group.main
+
  ]
 }
 
