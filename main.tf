@@ -222,26 +222,26 @@ resource "azuread_service_principal" "internal" {
 }
 
 
-// resource "azuread_app_role_assignment" "example" {
-//   depends_on = [azuread_application.main]
-//   #for_each = output.azure_roles_group
-//   #for_each            = {for i,v in local.groups_r: i=>v}
+resource "azuread_app_role_assignment" "example" {
+  depends_on = [azuread_application.main]
+  #for_each = output.azure_roles_group
+  #for_each            = {for i,v in local.groups_r: i=>v}
   
 
-//   for_each = {for i,v in local.group_list: i=>v} 
+  for_each = local.groups-roles-map
 
 
 
-//   #for_each = toset(local.groups_r[0])
+  #for_each = toset(local.groups_r[0])
   
 
-//     app_role_id         = each.value.role_id != null ?  each.value.role_id : null
+    app_role_id         = each.value.role # != null ?  each.value.role_id : null
    
-//     principal_object_id =  each.key
-//     resource_object_id  = azuread_service_principal.internal.object_id
+    principal_object_id = each.value.group #role_id
+    resource_object_id  = azuread_service_principal.internal.object_id
 
 
-// }
+}
 
 
 
