@@ -1,6 +1,6 @@
 data "azuread_client_config" "current" {}
 
-  # data source for get group id by group name from azure ad
+# data source for get group id by group name from azure ad
 data "azuread_group" "main" {
   for_each = toset(keys(var.group_names))
   display_name       = each.value
@@ -19,6 +19,11 @@ data "azuread_group" "main" {
 //   value =  local.groups_r
 // }
 
+# create a ramdom ids for role creation 
+resource "random_uuid" "random_role_id" {
+  count = length(var.app_role)
+}
+
 
 locals {
   #
@@ -32,15 +37,10 @@ locals {
           ]
 }
 
-resource "random_uuid" "random_id" {
-  count = 10
-}
 
 
-resource "random_uuid" "random_role_id" {
-  count = length(var.app_role)
-}
 
+# create a app register on azure ad
 resource "azuread_application" "main" {
 
 
@@ -119,7 +119,6 @@ resource "azuread_application" "main" {
       mapped_claims_enabled          = lookup(var.api, "mapped_claims_enabled", null)
       requested_access_token_version = lookup(var.api, "requested_access_token_version", null)
       known_client_applications      = lookup(var.api, "known_client_applications", null)
-
       dynamic "oauth2_permission_scope" {
         for_each = lookup(var.api, "oauth2_permission_scope", [])
         content {
@@ -192,7 +191,7 @@ resource "azuread_app_role_assignment" "example" {
   for_each            = {for i,v in local.groups_r[0]: i=>v}
   #for_each = toset(local.groups_r[0])
 
-    app_role_id         = each.value.role_id != null ?  each.value.role_id : "432e4502-173f-4152-8176-zzzzzzzzzzzzs"
+    app_role_id         = each.value.role_id != null ?  each.value.role_id : null
     principal_object_id = each.value.group_id
     resource_object_id  = azuread_service_principal.internal.object_id
 
