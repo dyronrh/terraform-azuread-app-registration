@@ -42,7 +42,7 @@ locals {
         group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
       }
     ]
-  ])))
+  ]))
 
   group_list_map = { for item in local.group_list: 
   
