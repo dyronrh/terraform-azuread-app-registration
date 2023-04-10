@@ -13,8 +13,8 @@ data "azuread_group" "main" {
 
 
 
-output "association-map" {
-  value = local.association-map
+output "groups-roles-map" {
+  value = local.groups-roles-map
 }
 
 output "all_resource_ids" {
@@ -37,15 +37,17 @@ resource "random_uuid" "random_role_id" {
 
 
 locals {
-    association-map = merge([
-    for user, policies in var.iam-user-policy-map : {
-      for policy in policies :
-        "${user}-${policy}" => {
-          "user"   = user
-          "policy" = policy
+    groups-roles-map = merge([
+    for group, roles in var.iam-user-policy-map : {
+      for role in roles :
+        "${group}-${roles}" => {
+          "group"   = group
+          "role" = role
         }
     }
   ]...)
+
+  
     # this converts the above into a list
   group_list = [
     for group, roles in  var.group_names : [

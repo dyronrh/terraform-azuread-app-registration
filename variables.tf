@@ -162,7 +162,7 @@ variable "group_names" {
 
 variable "iam-user-policy-map" {
   default = {
-    "user 1" = ["policy1", "policy2"],
-    "user 2" = ["policy1"]
+    "POC_USER_ROLES_1" = ["Reader_poc", "Reader_poc1", "Reader_poc2"],
+    "POC_USER_ROLES_2" = ["Reader_poc4", "Reader_poc6", "Reader_poc7"]
   }
 }
