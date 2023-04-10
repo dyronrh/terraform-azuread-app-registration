@@ -35,14 +35,14 @@ output test {
 
 locals {
     # this converts the above into a list
-  group_list = flatten([
+  group_list = tomap(flatten([
     for group, roles in  var.group_names : [
       for role in roles: {
         role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
         group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
       }
     ]
-  ])
+  ])))
 
   group_list_map = { for item in local.group_list: 
   
