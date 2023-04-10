@@ -34,9 +34,6 @@ resource "random_uuid" "random_role_id" {
   count = length(var.app_role)
 }
 
-output test {
-  value = local.group_list_map
-}
 
 
 locals {
@@ -59,10 +56,10 @@ locals {
     ]
   ]
 
-  group_list_map = { for item in local.group_list: 
+  // group_list_map = { for item in local.group_list: 
   
-    item.role_id => values(item)
-  }
+  //   item.role_id => values(item)
+  // }
   #
   groups_r = [
             for group, roles in var.group_names : [
