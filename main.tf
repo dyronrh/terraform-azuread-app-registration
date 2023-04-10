@@ -28,6 +28,10 @@ resource "random_uuid" "random_role_id" {
   count = length(var.app_role)
 }
 
+output test {
+  value = local.group_list_map
+}
+
 
 locals {
     # this converts the above into a list
@@ -39,6 +43,10 @@ locals {
       }
     ]
   ])
+
+  group_list_map = { for item in local.group_list: 
+    keys(item)[0] => values(item)[0]
+  }
   #
   groups_r = [
             for group, roles in var.group_names : [
@@ -203,9 +211,7 @@ resource "azuread_app_role_assignment" "example" {
   #for_each = output.azure_roles_group
   #for_each            = {for i,v in local.groups_r: i=>v}
 
-    for_each = { for proj in local.group_list :
-    "${proj.role_id}_${proj.group_id}" => proj
-  }
+    for_each = local.group_list_map 
 
 
   #for_each = toset(local.groups_r[0])
