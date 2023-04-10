@@ -19,6 +19,10 @@ output "all_resource_ids" {
    value =  local.groups_r
  }
 
+ output "all_groupos" {
+   value =  local.group_list
+ }
+
 # create a ramdom ids for role creation 
 resource "random_uuid" "random_role_id" {
   count = length(var.app_role)
@@ -26,6 +30,15 @@ resource "random_uuid" "random_role_id" {
 
 
 locals {
+    # this converts the above into a list
+  group_list = flatten([
+    for group, roles in  var.group_names : [
+      for role in roles: {
+        role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
+        group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
+      }
+    ]
+  ])
   #
   groups_r = [
             for group, roles in var.group_names : [
@@ -188,11 +201,16 @@ resource "azuread_service_principal" "internal" {
 
 resource "azuread_app_role_assignment" "example" {
   #for_each = output.azure_roles_group
-  for_each            = {for i,v in local.groups_r: i=>v}
+  #for_each            = {for i,v in local.groups_r: i=>v}
+  for_each = {
+    for group in local.group_list :
+    group.role_id => group.group_id
+  }
+
   #for_each = toset(local.groups_r[0])
 
-    app_role_id         = each.value.role_id != null ?  each.value.role_id : null
-    principal_object_id = each.value.group_id
+    app_role_id         = each.value != null ?  each.value : null
+    principal_object_id = each.key
     resource_object_id  = azuread_service_principal.internal.object_id
 
    depends_on = [
