@@ -41,8 +41,8 @@ locals {
     for group, roles in var.iam-user-policy-map : {
       for role in roles :
         "${group}-${role}" => {
-          "group"   = group
-          "role" = role
+          "group"   = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null
+          "role" = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
         }
     }
   ]...)
