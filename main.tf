@@ -35,14 +35,14 @@ output test {
 
 locals {
     # this converts the above into a list
-  group_list = tomap(flatten([
+  group_list = flatten([
     for group, roles in  var.group_names : [
       for role in roles: {
         role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
         group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
       }
     ]
-  ]))
+  ])
 
   group_list_map = { for item in local.group_list: 
   
@@ -214,14 +214,16 @@ resource "azuread_app_role_assignment" "example" {
   #for_each            = {for i,v in local.groups_r: i=>v}
   
 
-    for_each = {for i,v in local.group_list_map: i=>v} 
+  #for_each = {for i,v in local.group_list_map: i=>v} 
+  count = length(local.group_list_map)
 
 
   #for_each = toset(local.groups_r[0])
   
 
-    app_role_id         = each.value.role_id != null ?  each.value.role_id : null
-    principal_object_id = each.value.group_id
+    app_role_id         = local.group_list_map[count.index].role_id #each.value.role_id != null ?  each.value.role_id : null
+   
+    principal_object_id =  local.group_list_map[count.index].group_id #each.value.group_id
     resource_object_id  = azuread_service_principal.internal.object_id
 
 
