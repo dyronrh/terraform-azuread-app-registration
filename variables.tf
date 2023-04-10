@@ -155,6 +155,6 @@ variable "redirect_uris" {
 }
 
 variable "group_names" {
-  type = map(any)
-  default ={ }
+  type = list(map(any))
+  default =[{ "POC_USER_ROLES_1" : ["Reader_poc", "Reader_poc1", "Reader_poc2"]},{ "POC_USER_ROLES_2" : ["Reader_poc", "Reader_poc1", "Reader_poc2"]}]
 }

@@ -11,13 +11,13 @@ data "azuread_group" "main" {
   ]
 }
 
-// output "all_resource_ids" {
-//   value =  {for s in data.azuread_group.example : s.object_id =>  s.display_name}
-// }
+output "all_resource_ids" {
+   value =  {for s,v in data.azuread_group.main : s.object_id =>  s.display_name}
+ }
 
-// output "all_rgroups" {
-//   value =  local.groups_r
-// }
+ output "all_rgroups" {
+   value =  local.groups_r
+ }
 
 # create a ramdom ids for role creation 
 resource "random_uuid" "random_role_id" {
@@ -31,7 +31,7 @@ locals {
             for group, roles in var.group_names : [
               for role in roles : {
                 role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
-                group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
+                group_id = contains([for s,v in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
               }
             ]
           ]
