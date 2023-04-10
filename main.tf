@@ -45,7 +45,8 @@ locals {
   ])
 
   group_list_map = { for item in local.group_list: 
-    "${values(item).group_id}_${values(item).role_id}"  => values(item)
+  
+    index(local.group_list, item) => values(item)
   }
   #
   groups_r = [
