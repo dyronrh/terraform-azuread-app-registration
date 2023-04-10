@@ -11,6 +11,20 @@ data "azuread_group" "main" {
   ]
 }
 
+  association-map = merge([
+    for user, policies in var.iam-user-policy-map : {
+      for policy in policies :
+        "${user}-${policy}" => {
+          "user"   = user
+          "policy" = policy
+        }
+    }
+  ]...)
+
+output "association-map" {
+  value = local.association-map
+}
+
 output "all_resource_ids" {
    value =  {for s in data.azuread_group.main : s.object_id =>  s.display_name}
  }
@@ -35,14 +49,14 @@ output test {
 
 locals {
     # this converts the above into a list
-  group_list = flatten([
+  group_list = [
     for group, roles in  var.group_names : [
       for role in roles: {
         role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
         group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
       }
     ]
-  ])
+  ]
 
   group_list_map = { for item in local.group_list: 
   
@@ -208,26 +222,7 @@ resource "azuread_service_principal" "internal" {
 }
 
 
-resource "azuread_app_role_assignment" "example" {
-  depends_on = [azuread_application.main]
-  #for_each = output.azure_roles_group
-  for_each            = {for i,v in local.groups_r: i=>v}
-  
 
-  #for_each = {for i,v in local.group_list_map: i=>v} 
-
-
-
-  #for_each = toset(local.groups_r[0])
-  
-
-    app_role_id         = each.value.role_id != null ?  each.value.role_id : null
-   
-    principal_object_id =  each.value.group_id
-    resource_object_id  = azuread_service_principal.internal.object_id
-
-
-}
 
 
 
