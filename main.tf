@@ -212,7 +212,7 @@ resource "azuread_app_role_assignment" "example" {
   #for_each = output.azure_roles_group
   #for_each            = {for i,v in local.groups_r: i=>v}
 
-    for_each = local.group_list_map 
+    for_each = tomap(local.group_list_map)
 
 
   #for_each = toset(local.groups_r[0])
