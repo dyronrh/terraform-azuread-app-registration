@@ -159,6 +159,7 @@ variable "group_names" {
   default = {}
 }
 
+
 variable "iam-user-policy-map" {
   type = map(any)
   default = {
