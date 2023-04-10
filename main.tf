@@ -40,14 +40,14 @@ locals {
     groups-roles-map = merge([
     for group, roles in var.iam-user-policy-map : {
       for role in roles :
-        "${group}-${roles}" => {
+        "${group}-${role}" => {
           "group"   = group
           "role" = role
         }
     }
   ]...)
 
-  
+
     # this converts the above into a list
   group_list = [
     for group, roles in  var.group_names : [
