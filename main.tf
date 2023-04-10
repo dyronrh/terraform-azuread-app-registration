@@ -11,17 +11,8 @@ data "azuread_group" "main" {
   ]
 }
 
- output association-map {
-  value = merge([
-    for user, policies in var.iam-user-policy-map : {
-      for policy in policies :
-        "${user}-${policy}" => {
-          "user"   = user
-          "policy" = policy
-        }
-    }
-  ]...)
-}
+
+
 output "association-map" {
   value = local.association-map
 }
@@ -49,6 +40,15 @@ output test {
 
 
 locals {
+    association-map = merge([
+    for user, policies in var.iam-user-policy-map : {
+      for policy in policies :
+        "${user}-${policy}" => {
+          "user"   = user
+          "policy" = policy
+        }
+    }
+  ]...)
     # this converts the above into a list
   group_list = [
     for group, roles in  var.group_names : [
@@ -223,7 +223,26 @@ resource "azuread_service_principal" "internal" {
 }
 
 
+// resource "azuread_app_role_assignment" "example" {
+//   depends_on = [azuread_application.main]
+//   #for_each = output.azure_roles_group
+//   #for_each            = {for i,v in local.groups_r: i=>v}
+  
 
+//   for_each = {for i,v in local.group_list: i=>v} 
+
+
+
+//   #for_each = toset(local.groups_r[0])
+  
+
+//     app_role_id         = each.value.role_id != null ?  each.value.role_id : null
+   
+//     principal_object_id =  each.key
+//     resource_object_id  = azuread_service_principal.internal.object_id
+
+
+// }
 
 
 
