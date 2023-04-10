@@ -38,7 +38,7 @@ resource "random_uuid" "random_role_id" {
 
 locals {
     groups-roles-map = merge([
-    for group, roles in var.iam-user-policy-map : {
+    for group, roles in var.group_names : {
       for role in roles :
         "${group}-${role}" => {
           "group"   = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null
@@ -226,20 +226,12 @@ resource "azuread_app_role_assignment" "example" {
   depends_on = [azuread_application.main]
   #for_each = output.azure_roles_group
   #for_each            = {for i,v in local.groups_r: i=>v}
-  
 
   for_each = local.groups-roles-map
-
-
-
   #for_each = toset(local.groups_r[0])
-  
-
     app_role_id         = each.value.role # != null ?  each.value.role_id : null
-   
     principal_object_id = each.value.group #role_id
     resource_object_id  = azuread_service_principal.internal.object_id
-
 
 }
 
