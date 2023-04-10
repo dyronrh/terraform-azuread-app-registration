@@ -209,7 +209,7 @@ resource "azuread_service_principal" "internal" {
 
 
 resource "azuread_app_role_assignment" "example" {
-  depends_on = [azuread_application.main,data.azuread_group.main]
+  
   #for_each = output.azure_roles_group
   #for_each            = {for i,v in local.groups_r: i=>v}
   
