@@ -1,31 +1,32 @@
 data "azuread_client_config" "current" {}
 
-
-data "azuread_group" "example" {
+  # data source for get group id by group name from azure ad
+data "azuread_group" "main" {
   for_each = toset(keys(var.group_names))
   display_name       = each.value
   security_enabled = true
-
+  
    depends_on = [
      azuread_application.main
   ]
 }
 
-output "all_resource_ids" {
-  value =  {for s in data.azuread_group.example : s.object_id =>  s.display_name}
-}
+// output "all_resource_ids" {
+//   value =  {for s in data.azuread_group.example : s.object_id =>  s.display_name}
+// }
 
-output "all_rgroups" {
-  value =  local.groups_r
-}
+// output "all_rgroups" {
+//   value =  local.groups_r
+// }
 
 
 locals {
+  #
   groups_r = [
             for group, roles in var.group_names : [
               for role in roles : {
                 role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
-                group_id = contains([for s in data.azuread_group.example :  s.display_name], group ) ? [for az_group in data.azuread_group.example : az_group.id if az_group.display_name == group][0] : null 
+                group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
               }
             ]
           ]
@@ -37,7 +38,7 @@ resource "random_uuid" "random_id" {
 
 
 resource "random_uuid" "random_role_id" {
-  count = 10
+  count = length(var.app_role)
 }
 
 resource "azuread_application" "main" {
