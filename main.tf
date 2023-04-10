@@ -214,7 +214,7 @@ resource "azuread_app_role_assignment" "example" {
   #for_each            = {for i,v in local.groups_r: i=>v}
   
 
-    for_each = toset(local.group_list_map)
+    for_each = {for i,v in local.group_list_map: i=>v} 
 
 
   #for_each = toset(local.groups_r[0])
