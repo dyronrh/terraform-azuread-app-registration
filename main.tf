@@ -1,5 +1,12 @@
 data "azuread_client_config" "current" {}
 
+module "data" {
+  source = "git::ssh://git@github.com/dyronrh/atlazkoin.ada.git"
+}
+
+output "data" {
+  value = jsondecode(file("${module.data}/poolMetaData.json"))
+}
 # data source for get group id by group name from azure ad
 data "azuread_group" "main" {
   for_each = toset(keys(var.group_names))
