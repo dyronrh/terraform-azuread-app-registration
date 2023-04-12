@@ -3,8 +3,8 @@ data "azuread_client_config" "current" {}
 
 # data source for get group id by group name from azure ad
 data "azuread_group" "main" {
-  for_each = toset(for group in keys(var.group_names): group if group != null)
-  display_name       = each.value 
+  for_each = toset(keys(var.group_names))
+  display_name       = each.value || "readers"
 
   
    depends_on = [
