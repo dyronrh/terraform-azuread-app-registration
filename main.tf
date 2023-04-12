@@ -44,7 +44,7 @@ resource "random_uuid" "random_role_id" {
 }
 
 locals {
-    all_groups = [for g in data.azuread_groups.all: g.display_name]
+    all_groups = data.azuread_groups.all
   //   groups-roles-map = merge([
   //   for group, roles in var.group_names : {
   //     for role in roles :
