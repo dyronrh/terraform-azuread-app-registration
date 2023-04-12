@@ -6,12 +6,12 @@ data "azuread_groups" "all" {
   return_all = true
 }
 
+
 # create a ramdom ids for role creation 
 resource "random_uuid" "random_role_id" {
   count = length(var.app_role)
 }
 
-# locals variables
 locals {
     all_groups = data.azuread_groups.all.display_names
     groups-roles-app-map = merge([
@@ -24,13 +24,12 @@ locals {
     }
   ]...)
 
+}
+
 # create a app register on azure ad
 resource "azuread_application" "main" {
-
-
   # mandatory arguments
   display_name = var.display_name
-
   # Optional arguments
   device_only_auth_enabled       = var.device_only_auth_enabled
   fallback_public_client_enabled = var.fallback_public_client_enabled
