@@ -12,31 +12,31 @@ output "groups-all" {
   value = data.azuread_groups.all
 }
 
-data "azuread_group" "main" {
-  for_each = toset(keys(var.group_names))
-  display_name       = each.value 
+// data "azuread_group" "main" {
+//   for_each = toset(keys(var.group_names))
+//   display_name       = each.value 
 
-   depends_on = [
-     azuread_application.main,
-     // azuread_group.main
-  ]
-}
+//    depends_on = [
+//      azuread_application.main,
+//      // azuread_group.main
+//   ]
+// }
 
-output "groups-roles-map" {
-  value = local.groups-roles-map
-}
+// output "groups-roles-map" {
+//   value = local.groups-roles-map
+// }
 
 // output "all_resource_ids" {
 //    value =  {for s in data.azuread_group.main : s.object_id =>  s.display_name}
 //  }
 
- output "all_rgroups" {
-   value =  local.groups_r
- }
+//  output "all_rgroups" {
+//    value =  local.groups_r
+//  }
 
- output "all_groupos" {
-   value =  local.group_list
- }
+//  output "all_groupos" {
+//    value =  local.group_list
+//  }
 
 # create a ramdom ids for role creation 
 resource "random_uuid" "random_role_id" {
