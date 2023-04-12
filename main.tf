@@ -5,7 +5,7 @@ data "azuread_client_config" "current" {}
 data "azuread_group" "main" {
   for_each = toset(keys(var.group_names))
   display_name       = each.value
-  security_enabled = false
+
   
    depends_on = [
      azuread_application.main
