@@ -44,6 +44,7 @@ resource "random_uuid" "random_role_id" {
 }
 
 locals {
+    all_groups = [for g in data.azuread_groups.all: g.display_name]
     groups-roles-map = merge([
     for group, roles in var.group_names : {
       for role in roles :
@@ -223,7 +224,7 @@ resource "azuread_service_principal" "internal" {
 }
 
 resource "azuread_group" "main" {
-  for_each = { for group, roles in var.group_names : group => roles if !contains([for s in data.azuread_groups.main :  s.display_name], group )}
+  for_each = { for group, roles in var.group_names : group => roles if !contains(local.all_groups, group )}
   display_name     =    each.key 
   security_enabled = true
 }
