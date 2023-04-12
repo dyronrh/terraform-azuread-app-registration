@@ -62,6 +62,17 @@ locals {
     }
   ]...)
 
+    groups-roles-app-map = merge([
+    for group, roles in var.group_names : {
+      for role in roles :
+        "${group}-${role}" => {
+         // "group"   = contains([for s in data.azuread_group.main : s.display_name], group ) ? [for az_group in data.azuread_group.main : group if az_group.display_name == group][0] : null
+          "group" = group
+          "role" = role
+        }
+    }
+  ]...)
+
 # this converts the above into a list
   group_list = [
     for group, roles in  var.group_names : [
@@ -250,9 +261,10 @@ resource "azuread_app_role_assignment" "example" {
   depends_on = [azuread_application.main,azuread_group.main]
   //azuread_application.main.app_role_ids["Admin.All"]
 
-  //for_each = local.groups-roles-map
-    app_role_id         = azuread_application.main.app_role_ids["Reader_poc"]
-    principal_object_id =  azuread_group.main["POC_USER_ROLES_3"].object_id
+  for_each = local.groups-roles-app-map
+  
+    app_role_id         = azuread_application.main.app_role_ids["${each.value.role}"]
+    principal_object_id = azuread_group.main["${each.value.group}"].display_name != null ?  azuread_group.main[${each.value.group}].object_id : [for gp,rl in local.groups-roles-map : rl.group if  gp == join(each.value.group,"-",each.value.role)]
     resource_object_id  = azuread_service_principal.internal.object_id
 }
 
