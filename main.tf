@@ -217,6 +217,7 @@ resource "azuread_application" "main" {
   }
 }
 
+
 resource "azuread_service_principal" "internal" {
   application_id = azuread_application.main.application_id
 }
