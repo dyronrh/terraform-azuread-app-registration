@@ -229,16 +229,25 @@ resource "azuread_group" "main" {
   security_enabled = true
 }
 
+// resource "azuread_app_role_assignment" "example" {
+//   depends_on = [azuread_application.main,azuread_group.main]
+//   //azuread_application.main.app_role_ids["Admin.All"]
+
+//   for_each = local.groups-roles-map
+//     app_role_id         = each.value.role # != null ?  each.value.role_id : null
+//     principal_object_id = each.value.group #role_id
+//     resource_object_id  = azuread_service_principal.internal.object_id
+// }
+
 resource "azuread_app_role_assignment" "example" {
   depends_on = [azuread_application.main,azuread_group.main]
+  //azuread_application.main.app_role_ids["Admin.All"]
 
-  for_each = local.groups-roles-map
-    app_role_id         = each.value.role # != null ?  each.value.role_id : null
-    principal_object_id = each.value.group #role_id
+  //for_each = local.groups-roles-map
+    app_role_id         = azuread_application.main.app_role_ids["Reader_poc"]
+    principal_object_id = azuread_group.example.app_group_ids["POC_USER_ROLES_1"]
     resource_object_id  = azuread_service_principal.internal.object_id
 }
-
-
 
 
 
