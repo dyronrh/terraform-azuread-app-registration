@@ -155,15 +155,7 @@ variable "redirect_uris" {
 }
 
 variable "group_names" {
+  description = "(Optional) Roles by groups asociations." 
   type = map(any)
   default = {}
-}
-
-
-variable "iam-user-policy-map" {
-  type = map(any)
-  default = {
-    "POC_USER_ROLES_1" = ["Reader_poc", "Reader_poc1", "Reader_poc2"],
-    "POC_USER_ROLES_2" = ["Reader_poc4", "Reader_poc6", "Reader_poc7"]
-  }
 }
