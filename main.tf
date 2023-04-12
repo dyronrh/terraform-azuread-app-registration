@@ -13,17 +13,12 @@ data "azuread_groups" "all" {
 
 output "groups-all" {
   value = data.azuread_groups.all.display_names
-     depends_on = [
-     azuread_group.main
-  ]
+
 }
 
 output "groups-all-full" {
   value = data.azuread_groups.all
-  depends_on = [
-     azuread_application.main,
-     azuread_group.main
-  ]
+
 }
 
 data "azuread_group" "main" {
