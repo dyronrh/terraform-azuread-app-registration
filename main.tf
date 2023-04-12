@@ -215,6 +215,7 @@ resource "azuread_group" "main" {
   for_each = { for group, roles in var.group_names :group => roles }
   display_name     = each.key
   security_enabled = true
+  prevent_duplicate_names = true
 }
 
 resource "azuread_app_role_assignment" "example" {
