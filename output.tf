@@ -31,7 +31,6 @@ output "azure_redirect_uri_public_client" {
   value = length(azuread_application.main.public_client.*.redirect_uris)  > 0 ? azuread_application.main.public_client.*.redirect_uris : null
 }
 
-
 output "azure_app_roles" {
   value = azuread_application.main.app_role.*
 }
