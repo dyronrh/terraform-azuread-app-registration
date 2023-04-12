@@ -13,7 +13,7 @@ output "groups-all" {
 }
 
 data "azuread_group" "main" {
-  for_each = toset(for k in keys(var.group_names) : k if k in data.azuread_groups.all.display_names)
+  for_each = toset([for k in keys(var.group_names): k if contains(data.azuread_groups.all.display_names,k)])
   display_name       = each.value 
 
    depends_on = [
