@@ -223,20 +223,21 @@ resource "azuread_service_principal" "internal" {
   application_id = azuread_application.main.application_id
 }
 
-resource "azuread_group" "main" {
-  for_each = { for group, roles in var.group_names : group => roles if !contains(local.all_groups, group )}
-  display_name     =    each.key 
-  security_enabled = true
-}
+// resource "azuread_group" "main" {
+//   for_each = { for group, roles in var.group_names : group => roles if !contains(local.all_groups, group )}
+//   display_name     =    each.key 
+//   security_enabled = true
+// }
 
-resource "azuread_app_role_assignment" "example" {
-  depends_on = [azuread_application.main,azuread_group.main]
+// resource "azuread_app_role_assignment" "example" {
+//   depends_on = [azuread_application.main,azuread_group.main]
 
-  for_each = local.groups-roles-map
-    app_role_id         = each.value.role # != null ?  each.value.role_id : null
-    principal_object_id = each.value.group #role_id
-    resource_object_id  = azuread_service_principal.internal.object_id
-}
+//   for_each = local.groups-roles-map
+//     app_role_id         = each.value.role # != null ?  each.value.role_id : null
+//     principal_object_id = each.value.group #role_id
+//     resource_object_id  = azuread_service_principal.internal.object_id
+// }
+
 
 
 
