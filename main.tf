@@ -212,8 +212,8 @@ resource "azuread_service_principal" "internal" {
 }
 
 resource "azuread_group" "main" {
-  for_each = { for group, roles in var.group_names : group => roles }
-  display_name     =  !contains([for s in data.azuread_group.main :  s.display_name], each.key ) ?  each.key : null
+  for_each = { for group, roles in var.group_names : group => roles if !contains([for s in data.azuread_group.main :  s.display_name], group )}
+  display_name     =    each.key 
   security_enabled = true
   prevent_duplicate_names = true
 }
