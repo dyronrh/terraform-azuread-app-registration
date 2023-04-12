@@ -7,7 +7,6 @@ data "azuread_client_config" "current" {}
 data "azuread_groups" "all" {
   return_all = true
    depends_on = [
-     azuread_application.main,
      azuread_group.main
   ]
 }
@@ -15,7 +14,6 @@ data "azuread_groups" "all" {
 output "groups-all" {
   value = data.azuread_groups.all.display_names
      depends_on = [
-     azuread_application.main,
      azuread_group.main
   ]
 }
