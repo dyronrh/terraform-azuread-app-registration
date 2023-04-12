@@ -41,6 +41,11 @@ output "all_resource_ids" {
    value =  local.groups_r
  }
 
+ output "new_groups" {
+   value =   azuread_group.main
+ }
+
+
  output "all_groupos" {
    value =  local.group_list
  }
@@ -257,16 +262,16 @@ resource "azuread_group" "main" {
 //     resource_object_id  = azuread_service_principal.internal.object_id
 // }
 
-resource "azuread_app_role_assignment" "example" {
-  depends_on = [azuread_application.main,azuread_group.main]
-  //azuread_application.main.app_role_ids["Admin.All"]
+// resource "azuread_app_role_assignment" "example" {
+//   depends_on = [azuread_application.main,azuread_group.main]
+//   //azuread_application.main.app_role_ids["Admin.All"]
 
-  for_each = local.groups-roles-app-map
+//   for_each = local.groups-roles-app-map
   
-    app_role_id         = azuread_application.main.app_role_ids[each.value.role]
-    principal_object_id = azuread_group.main[each.value.group]  ?  azuread_group.main[each.value.group].object_id : [for gp,rl in local.groups-roles-map : rl.group if  gp == join(each.value.group,"-",each.value.role)]
-    resource_object_id  = azuread_service_principal.internal.object_id
-}
+//     app_role_id         = azuread_application.main.app_role_ids[each.value.role]
+//     principal_object_id = azuread_group.main[each.value.group]  ?  azuread_group.main[each.value.group].object_id : [for gp,rl in local.groups-roles-map : rl.group if  gp == join(each.value.group,"-",each.value.role)]
+//     resource_object_id  = azuread_service_principal.internal.object_id
+// }
 
 
 
