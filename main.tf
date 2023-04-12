@@ -6,9 +6,7 @@ data "azuread_client_config" "current" {}
 #list all groups
 data "azuread_groups" "all" {
   return_all = true
-   depends_on = [
-     azuread_group.main
-  ]
+
 }
 
 output "groups-all" {
