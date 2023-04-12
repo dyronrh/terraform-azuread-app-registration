@@ -12,31 +12,31 @@ output "groups-all" {
   value = data.azuread_groups.all.display_names
 }
 
-// data "azuread_group" "main" {
-//   for_each = toset(keys(var.group_names))
-//   display_name       = each.value 
+data "azuread_group" "main" {
+  for_each = toset(keys(var.group_names))
+  display_name       = each.value 
 
-//    depends_on = [
-//      azuread_application.main,
-//      // azuread_group.main
-//   ]
-// }
+   depends_on = [
+     azuread_application.main,
+     // azuread_group.main
+  ]
+}
 
-// output "groups-roles-map" {
-//   value = local.groups-roles-map
-// }
+output "groups-roles-map" {
+  value = local.groups-roles-map
+}
 
-// output "all_resource_ids" {
-//    value =  {for s in data.azuread_group.main : s.object_id =>  s.display_name}
-//  }
+output "all_resource_ids" {
+   value =  {for s in data.azuread_group.main : s.object_id =>  s.display_name}
+ }
 
-//  output "all_rgroups" {
-//    value =  local.groups_r
-//  }
+ output "all_rgroups" {
+   value =  local.groups_r
+ }
 
-//  output "all_groupos" {
-//    value =  local.group_list
-//  }
+ output "all_groupos" {
+   value =  local.group_list
+ }
 
 # create a ramdom ids for role creation 
 resource "random_uuid" "random_role_id" {
@@ -44,35 +44,35 @@ resource "random_uuid" "random_role_id" {
 }
 
 locals {
-    all_groups = data.azuread_groups.all
-  //   groups-roles-map = merge([
-  //   for group, roles in var.group_names : {
-  //     for role in roles :
-  //       "${group}-${role}" => {
-  //         "group"   = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null
-  //         "role" = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
-  //       }
-  //   }
-  // ]...)
+    all_groups = data.azuread_groups.all.display_names
+    groups-roles-map = merge([
+    for group, roles in var.group_names : {
+      for role in roles :
+        "${group}-${role}" => {
+          "group"   = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null
+          "role" = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
+        }
+    }
+  ]...)
 
 # this converts the above into a list
-  // group_list = [
-  //   for group, roles in  var.group_names : [
-  //     for role in roles: {
-  //       role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
-  //       group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
-  //     }
-  //   ]
-  // ]
+  group_list = [
+    for group, roles in  var.group_names : [
+      for role in roles: {
+        role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
+        group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
+      }
+    ]
+  ]
 
-  // groups_r = [
-  //           for group, roles in var.group_names : [
-  //             for role in roles : {
-  //               role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
-  //               group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
-  //             }
-  //           ]
-  //         ]
+  groups_r = [
+            for group, roles in var.group_names : [
+              for role in roles : {
+                role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
+                group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
+              }
+            ]
+          ]
 }
 
 
@@ -223,20 +223,20 @@ resource "azuread_service_principal" "internal" {
   application_id = azuread_application.main.application_id
 }
 
-// resource "azuread_group" "main" {
-//   for_each = { for group, roles in var.group_names : group => roles if !contains(local.all_groups, group )}
-//   display_name     =    each.key 
-//   security_enabled = true
-// }
+resource "azuread_group" "main" {
+  for_each = { for group, roles in var.group_names : group => roles if !contains(local.all_groups, group )}
+  display_name     =    each.key 
+  security_enabled = true
+}
 
-// resource "azuread_app_role_assignment" "example" {
-//   depends_on = [azuread_application.main,azuread_group.main]
+resource "azuread_app_role_assignment" "example" {
+  depends_on = [azuread_application.main,azuread_group.main]
 
-//   for_each = local.groups-roles-map
-//     app_role_id         = each.value.role # != null ?  each.value.role_id : null
-//     principal_object_id = each.value.group #role_id
-//     resource_object_id  = azuread_service_principal.internal.object_id
-// }
+  for_each = local.groups-roles-map
+    app_role_id         = each.value.role # != null ?  each.value.role_id : null
+    principal_object_id = each.value.group #role_id
+    resource_object_id  = azuread_service_principal.internal.object_id
+}
 
 
 
