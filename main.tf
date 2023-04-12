@@ -275,5 +275,3 @@ resource "azuread_app_role_assignment" "example" {
 }
 
 
-
-object_id
