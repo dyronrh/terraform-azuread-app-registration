@@ -2,9 +2,6 @@ data "azuread_client_config" "current" {}
 
 
 # data source for get group id by group name from azure ad
-data "azuread_groups" "example" {
-  display_names = ["group-a", "group-b"]
-}
 
 #list all groups
 data "azuread_groups" "all" {
@@ -19,9 +16,9 @@ data "azuread_group" "main" {
   for_each = toset(keys(var.group_names))
   display_name       = each.value 
 
-  
    depends_on = [
-     azuread_application.main
+     azuread_application.main,
+     azuread_group.main
   ]
 }
 
@@ -225,14 +222,13 @@ resource "azuread_service_principal" "internal" {
 }
 
 resource "azuread_group" "main" {
-  for_each = { for group, roles in var.group_names : group => roles if !contains([for s in data.azuread_group.main :  s.display_name], group )}
+  for_each = { for group, roles in var.group_names : group => roles if !contains([for s in data.azuread_groups.main :  s.display_name], group )}
   display_name     =    each.key 
   security_enabled = true
-  prevent_duplicate_names = true
 }
 
 resource "azuread_app_role_assignment" "example" {
-  depends_on = [azuread_application.main]
+  depends_on = [azuread_application.main,azuread_group.main]
 
   for_each = local.groups-roles-map
     app_role_id         = each.value.role # != null ?  each.value.role_id : null
