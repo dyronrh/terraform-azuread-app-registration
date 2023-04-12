@@ -18,7 +18,7 @@ data "azuread_group" "main" {
 
    depends_on = [
      azuread_application.main,
-     azuread_group.main
+     // azuread_group.main
   ]
 }
 
@@ -26,9 +26,9 @@ output "groups-roles-map" {
   value = local.groups-roles-map
 }
 
-output "all_resource_ids" {
-   value =  {for s in data.azuread_group.main : s.object_id =>  s.display_name}
- }
+// output "all_resource_ids" {
+//    value =  {for s in data.azuread_group.main : s.object_id =>  s.display_name}
+//  }
 
  output "all_rgroups" {
    value =  local.groups_r
@@ -45,34 +45,34 @@ resource "random_uuid" "random_role_id" {
 
 locals {
     all_groups = [for g in data.azuread_groups.all: g.display_name]
-    groups-roles-map = merge([
-    for group, roles in var.group_names : {
-      for role in roles :
-        "${group}-${role}" => {
-          "group"   = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null
-          "role" = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
-        }
-    }
-  ]...)
+  //   groups-roles-map = merge([
+  //   for group, roles in var.group_names : {
+  //     for role in roles :
+  //       "${group}-${role}" => {
+  //         "group"   = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null
+  //         "role" = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
+  //       }
+  //   }
+  // ]...)
 
 # this converts the above into a list
-  group_list = [
-    for group, roles in  var.group_names : [
-      for role in roles: {
-        role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
-        group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
-      }
-    ]
-  ]
+  // group_list = [
+  //   for group, roles in  var.group_names : [
+  //     for role in roles: {
+  //       role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
+  //       group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
+  //     }
+  //   ]
+  // ]
 
-  groups_r = [
-            for group, roles in var.group_names : [
-              for role in roles : {
-                role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
-                group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
-              }
-            ]
-          ]
+  // groups_r = [
+  //           for group, roles in var.group_names : [
+  //             for role in roles : {
+  //               role_id  = length([for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ]) > 0 ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role ][0] : null
+  //               group_id = contains([for s in data.azuread_group.main :  s.display_name], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
+  //             }
+  //           ]
+  //         ]
 }
 
 
