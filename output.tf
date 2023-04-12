@@ -35,14 +35,14 @@ output "azure_app_roles" {
   value = azuread_application.main.app_role.*
 }
 
-output "azure_roles_group" {
-  description = "The application's roles in groups."
-  value = flatten([
-            for group, roles in var.group_names : [
-              for role in roles : {
-                role_id  = contains([azuread_application.main.app_role.*.display_name], role ) ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role][0] : null 
-                group_id = contains([data.azuread_group.main], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
-              }
-            ]
-          ])
-}
+// output "azure_roles_group" {
+//   description = "The application's roles in groups."
+//   value = flatten([
+//             for group, roles in var.group_names : [
+//               for role in roles : {
+//                 role_id  = contains([azuread_application.main.app_role.*.display_name], role ) ? [for az_role in azuread_application.main.app_role.* : az_role.id if az_role.display_name == role][0] : null 
+//                 group_id = contains([data.azuread_group.main], group ) ? [for az_group in data.azuread_group.main : az_group.id if az_group.display_name == group][0] : null 
+//               }
+//             ]
+//           ])
+// }
