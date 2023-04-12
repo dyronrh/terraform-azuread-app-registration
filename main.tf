@@ -9,7 +9,7 @@ data "azuread_groups" "all" {
 }
 
 output "groups-all" {
-  value = data.azuread_groups.all
+  value = data.azuread_groups.all.display_names
 }
 
 // data "azuread_group" "main" {
