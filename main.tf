@@ -1,12 +1,6 @@
 data "azuread_client_config" "current" {}
 
-module "data" {
-  source = "git::ssh://git@github.com/dyronrh/atlazkoin.ada.git"
-}
 
-output "data" {
-  value = jsondecode(file("${module.data}/poolMetaData.json"))
-}
 # data source for get group id by group name from azure ad
 data "azuread_group" "main" {
   for_each = toset(keys(var.group_names))
@@ -17,8 +11,6 @@ data "azuread_group" "main" {
      azuread_application.main
   ]
 }
-
-
 
 output "groups-roles-map" {
   value = local.groups-roles-map
@@ -41,8 +33,6 @@ resource "random_uuid" "random_role_id" {
   count = length(var.app_role)
 }
 
-
-
 locals {
     groups-roles-map = merge([
     for group, roles in var.group_names : {
@@ -54,8 +44,7 @@ locals {
     }
   ]...)
 
-
-    # this converts the above into a list
+# this converts the above into a list
   group_list = [
     for group, roles in  var.group_names : [
       for role in roles: {
@@ -65,11 +54,6 @@ locals {
     ]
   ]
 
-  // group_list_map = { for item in local.group_list: 
-  
-  //   item.role_id => values(item)
-  // }
-  #
   groups_r = [
             for group, roles in var.group_names : [
               for role in roles : {
@@ -223,23 +207,23 @@ resource "azuread_application" "main" {
   }
 }
 
-
 resource "azuread_service_principal" "internal" {
   application_id = azuread_application.main.application_id
 }
 
+resource "azuread_group" "main" {
+  for_each = { for group, roles in var.group_names :group => roles }
+  display_name     = each.key
+  security_enabled = true
+}
 
 resource "azuread_app_role_assignment" "example" {
   depends_on = [azuread_application.main]
-  #for_each = output.azure_roles_group
-  #for_each            = {for i,v in local.groups_r: i=>v}
 
   for_each = local.groups-roles-map
-  #for_each = toset(local.groups_r[0])
     app_role_id         = each.value.role # != null ?  each.value.role_id : null
     principal_object_id = each.value.group #role_id
     resource_object_id  = azuread_service_principal.internal.object_id
-
 }
 
 
