@@ -13,6 +13,9 @@ output "client_id" {
   value = azuread_application.main.client_id
 }
 
+output "azure_app" {
+  value = azuread_application.main
+}
 
 output "azure_redirect_uri_spa" {
   description = "The application's redirect redirect_uris for spa."
@@ -31,9 +34,11 @@ output "azure_redirect_uri_public_client" {
   value = length(azuread_application.main.public_client.*.redirect_uris)  > 0 ? azuread_application.main.public_client.*.redirect_uris : null
 }
 
+
 output "azure_app_roles" {
   value = azuread_application.main.app_role.*
 }
+
 
 output "azure_roles_group" {
   description = "The application's roles in groups."
