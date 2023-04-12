@@ -6,12 +6,10 @@ data "azuread_client_config" "current" {}
 #list all groups
 data "azuread_groups" "all" {
   return_all = true
-
 }
 
 output "groups-all" {
   value = data.azuread_groups.all.display_names
-
 }
 
 output "groups-all-full" {
@@ -44,7 +42,6 @@ output "all_resource_ids" {
  output "new_groups" {
    value =   azuread_group.main
  }
-
 
  output "all_groupos" {
    value =  local.group_list
@@ -269,7 +266,7 @@ resource "azuread_app_role_assignment" "example" {
   for_each = local.groups-roles-app-map
   
     app_role_id         = azuread_application.main.app_role_ids[each.value.role]
-    principal_object_id = azuread_group.main[each.value.group].object_id
+    principal_object_id = !azuread_group.main[each.value.group].object_id ? data.azuread_groups.all.object_ids[index(data.azuread_groups.all.display_names,each.value.group)] :null
    // principal_object_id = azuread_group.main[each.value.group]  ?  azuread_group.main[each.value.group].object_id : [for gp,rl in local.groups-roles-map : rl.group if  gp == join(each.value.group,"-",each.value.role)]
     resource_object_id  = azuread_service_principal.internal.object_id
 }
