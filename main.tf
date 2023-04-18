@@ -180,7 +180,7 @@ resource "azuread_group" "main" {
 resource "azuread_app_role_assignment" "main" {
   depends_on = [azuread_application.main,azuread_group.main]
   for_each = local.groups-roles-app-map
-    app_role_id         = azuread_application.main.app_role_ids[each.value.role]
+    app_role_id         = azuread_application.main.app_role_ids["${var.display_name}_${each.value.role}"]
     principal_object_id = !can(azuread_group.main[each.value.group].object_id) ? data.azuread_groups.all.object_ids[index(data.azuread_groups.all.display_names,each.value.group)] : azuread_group.main[each.value.group].object_id
     resource_object_id  = azuread_service_principal.internal.object_id
 }
