@@ -159,3 +159,23 @@ variable "group_names" {
   type = map(any)
   default = {}
 }
+
+
+variable "id_domain" {
+  description = "(Required) Domain name of IT- Element"  
+  type = string
+  nullable = false
+}
+
+variable "sub_domain" {
+  description = "(Required) Domain name of IT- Element"  
+  type = string
+  nullable = false
+}
+
+
+variable "it_element" {
+  description = "(Optional) It Element value for this app"
+  type = string
+  default = null
+}

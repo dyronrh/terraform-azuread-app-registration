@@ -1,13 +1,11 @@
 data "azuread_client_config" "current" {}
-# data source for get groups list from azure ad
+
 
 #list all groups
 data "azuread_groups" "all" {
-  return_all = true
+  display_names = keys(var.group_names)
 }
 
-
-# create a ramdom ids for role creation 
 resource "random_uuid" "random_role_id" {
   count = length(var.app_role)
 }
@@ -26,10 +24,12 @@ locals {
 
 }
 
-# create a app register on azure ad
 resource "azuread_application" "main" {
+
+
   # mandatory arguments
   display_name = var.display_name
+
   # Optional arguments
   device_only_auth_enabled       = var.device_only_auth_enabled
   fallback_public_client_enabled = var.fallback_public_client_enabled
@@ -102,6 +102,7 @@ resource "azuread_application" "main" {
       mapped_claims_enabled          = lookup(var.api, "mapped_claims_enabled", null)
       requested_access_token_version = lookup(var.api, "requested_access_token_version", null)
       known_client_applications      = lookup(var.api, "known_client_applications", null)
+
       dynamic "oauth2_permission_scope" {
         for_each = lookup(var.api, "oauth2_permission_scope", [])
         content {
@@ -140,10 +141,10 @@ resource "azuread_application" "main" {
     content {
       allowed_member_types = role.value.allowed_member_types
       description          = role.value.description
-      display_name         = role.value.display_name
+      display_name         = "${var.display_name}_${role.value.display_name}"
       enabled              = lookup(role.value, "enabled", true)
       id                   =  role.value.id == "generate" ? element(random_uuid.random_role_id[*].result, role.key) : lookup(role.value, "id", null)
-      value                = lookup(role.value, "value", null)
+      value                = "${var.display_name}_${role.value.display_name}"
     }
   }
 
@@ -169,17 +170,20 @@ resource "azuread_service_principal" "internal" {
 }
 
 resource "azuread_group" "main" {
-  for_each = { for group, roles in var.group_names : group => roles if !contains(local.all_groups, group )}
-  display_name     =    each.key 
+  for_each = { for group, roles in var.group_names : group => roles if !contains(local.all_groups, group)}
+  
+  display_name     =  var.it_element != null ? join("",["GRP_",upper(var.it_element),"_",upper(each.key)]) : join("",["GRP_",upper(var.id_domain),"/",upper(var.sub_domain),"_",upper(each.key)]) 
   security_enabled = true
 }
 
-resource "azuread_app_role_assignment" "example" {
+resource "azuread_app_role_assignment" "main" {
   depends_on = [azuread_application.main,azuread_group.main]
   for_each = local.groups-roles-app-map
     app_role_id         = azuread_application.main.app_role_ids[each.value.role]
     principal_object_id = !can(azuread_group.main[each.value.group].object_id) ? data.azuread_groups.all.object_ids[index(data.azuread_groups.all.display_names,each.value.group)] : azuread_group.main[each.value.group].object_id
     resource_object_id  = azuread_service_principal.internal.object_id
 }
+
+
 
 
