@@ -4,6 +4,7 @@ data "azuread_client_config" "current" {}
 #list all groups
 data "azuread_groups" "all" {
   display_names = keys(var.group_names)
+  ignore_missing = true
 }
 
 resource "random_uuid" "random_role_id" {
