@@ -164,13 +164,13 @@ variable "group_names" {
 variable "id_domain" {
   description = "(Required) Domain name of IT- Element"  
   type = string
-  nullable = false
+  default = null
 }
 
 variable "sub_domain" {
   description = "(Required) Domain name of IT- Element"  
   type = string
-  nullable = false
+  default = null
 }
 
 

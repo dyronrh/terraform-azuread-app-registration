@@ -7,11 +7,16 @@ data "azuread_groups" "all" {
   ignore_missing = true
 }
 
+
 resource "random_uuid" "random_role_id" {
   count = length(var.app_role)
 }
 
+output "variables_in" {
+  value = local.has_domain
+}
 locals {
+  has_domain = [for a in [var.sub_domain == null, var.sub_domain == null, var.it_element == null] : a if a == true ]
     all_groups = data.azuread_groups.all.display_names
     groups-roles-app-map = merge([
     for group, roles in var.group_names : {
@@ -27,6 +32,12 @@ locals {
 
 resource "azuread_application" "main" {
 
+  lifecycle {
+    precondition {
+      condition     = [var.sub_domain == null, var.sub_domain == null]
+      error_message = "The selected AMI must be for the x86_64 architecture."
+    }
+  }
 
   # mandatory arguments
   display_name = var.display_name
@@ -178,6 +189,7 @@ resource "azuread_group" "main" {
 }
 
 resource "azuread_app_role_assignment" "main" {
+
   depends_on = [azuread_application.main,azuread_group.main]
   for_each = local.groups-roles-app-map
     app_role_id         = azuread_application.main.app_role_ids["${var.display_name}_${each.value.role}"]
