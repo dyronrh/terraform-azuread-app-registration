@@ -17,7 +17,7 @@ output "variables_in" {
 }
 locals {
   id_group_ls = [var.sub_domain, var.sub_domain, var.it_element]
-  has_domain = [for a in id_group_ls: a != null]
+  has_domain = [for a in local.id_group_ls: a != null]
     all_groups = data.azuread_groups.all.display_names
     groups-roles-app-map = merge([
     for group, roles in var.group_names : {
