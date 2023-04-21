@@ -35,7 +35,7 @@ resource "azuread_application" "main" {
 
   lifecycle {
     precondition {
-      condition     = lenght(local.has_domain) == 1
+      condition     = length(local.has_domain) == 1
       error_message = "Estas comiendo pinga, es solo un valor weeeoooon x 3."
     }
   }
