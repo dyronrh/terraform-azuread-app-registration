@@ -33,6 +33,12 @@ locals {
 resource "azuread_application" "main" {
 
 
+  lifecycle {
+    precondition {
+      condition     = local.variables_in == 1
+      error_message = "Estas comiendo pinga, es solo un valor weeeoooon x 3."
+    }
+  }
 
   # mandatory arguments
   display_name = var.display_name
