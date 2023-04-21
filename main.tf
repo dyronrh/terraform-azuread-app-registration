@@ -32,12 +32,12 @@ locals {
 
 resource "azuread_application" "main" {
 
-  lifecycle {
-    precondition {
-      condition     = [var.sub_domain == null, var.sub_domain == null]
-      error_message = "The selected AMI must be for the x86_64 architecture."
-    }
-  }
+  // lifecycle {
+  //   precondition {
+  //     condition     = [var.sub_domain == null, var.sub_domain == null]
+  //     error_message = "The selected AMI must be for the x86_64 architecture."
+  //   }
+  // }
 
   # mandatory arguments
   display_name = var.display_name
