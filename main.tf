@@ -16,7 +16,8 @@ output "variables_in" {
   value = local.has_domain
 }
 locals {
-  has_domain = [for a in [var.sub_domain != null, var.sub_domain != null, var.it_element != null] : a if a == true ]
+  id_group_ls = [var.sub_domain, var.sub_domain, var.it_element][
+  has_domain = [for a in id_group_ls: a != null]
     all_groups = data.azuread_groups.all.display_names
     groups-roles-app-map = merge([
     for group, roles in var.group_names : {
@@ -184,8 +185,8 @@ resource "azuread_service_principal" "internal" {
 
 resource "azuread_group" "main" {
   for_each = { for group, roles in var.group_names : group => roles if !contains(local.all_groups, group)}
-  
-  display_name     =  var.it_element != null ? join("",["GRP_",upper(var.it_element),"_",upper(each.key)]) : join("",["GRP_",upper(var.id_domain) || upper(var.sub_domain),"_",upper(each.key)]) 
+    display_name     = join("",["GRP_",id_group_ls[index(local.has_domain, true)],"_",upper(each.key)])  
+  #display_name     =  var.it_element != null ? join("",["GRP_",upper(var.it_element),"_",upper(each.key)]) : join("",["GRP_",upper(var.id_domain),"/",upper(var.sub_domain),"_",upper(each.key)]) 
   security_enabled = true
 }
 
