@@ -13,11 +13,13 @@ resource "random_uuid" "random_role_id" {
 }
 
 output "variables_in" {
-  value = local.has_domain
+  value = local.id_group_ls
 }
+
 locals {
-  id_group_ls = [var.sub_domain, var.sub_domain, var.it_element]
-  has_domain = [for a in local.id_group_ls: a != null]
+  id_group_ls = [var.id_domain != null,var.sub_domain != null,var.it_element != null]
+  id_group_ls_val = [var.id_domain,var.sub_domain ,var.it_element ]
+  has_domain = [for a in local.id_group_ls: a if a == true]
     all_groups = data.azuread_groups.all.display_names
     groups-roles-app-map = merge([
     for group, roles in var.group_names : {
@@ -185,8 +187,8 @@ resource "azuread_service_principal" "internal" {
 
 resource "azuread_group" "main" {
   for_each = { for group, roles in var.group_names : group => roles if !contains(local.all_groups, group)}
-   # display_name     = join("",["GRP_",local.id_group_ls[index(local.has_domain, "true")],"_",upper(each.key)])  
-  display_name     =  var.it_element != null ? join("",["GRP_",upper(var.it_element),"_",upper(each.key)]) : join("",["GRP_",upper(var.id_domain),"_",upper(each.key)]) 
+  display_name     = join("",["GRP_",local.id_group_ls_val[index(local.id_group_ls, true)],"_",upper(each.key)])  
+  #display_name     =  var.it_element != null ? join("",["GRP_",upper(var.it_element),"_",upper(each.key)]) : join("",["GRP_",upper(var.id_domain),"_",upper(each.key)]) 
   security_enabled = true
 }
 
