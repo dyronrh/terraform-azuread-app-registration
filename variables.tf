@@ -162,13 +162,13 @@ variable "group_names" {
 
 
 variable "id_domain" {
-  description = "(Optional) Domain name of the resource, if set this variable you can´t set sub_domain or it_element"  
+  description = "(Optional) Domain  of the resource, if set this variable you can´t set sub_domain or it_element"  
   type = string
   default = null
 }
 
 variable "sub_domain" {
-  description = "(Optional) Domain name of the resource, if set this variable you can´t set id_domain or it_element"  
+  description = "(Optional) Sub Domain  of the resource, if set this variable you can´t set id_domain or it_element"  
   type = string
   default = null
 }

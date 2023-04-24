@@ -188,7 +188,6 @@ resource "azuread_service_principal" "internal" {
 resource "azuread_group" "main" {
   for_each = { for group, roles in var.group_names : group => roles if !contains(local.all_groups, group)}
   display_name     = join("",["GRP_",local.id_group_ls_val[index(local.id_group_ls, true)],"_",upper(each.key)])  
-  #display_name     =  var.it_element != null ? join("",["GRP_",upper(var.it_element),"_",upper(each.key)]) : join("",["GRP_",upper(var.id_domain),"_",upper(each.key)]) 
   security_enabled = true
 }
 
