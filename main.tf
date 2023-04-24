@@ -39,7 +39,7 @@ resource "azuread_application" "main" {
   lifecycle {
     precondition {
       condition     = length(local.has_domain) == 1
-      error_message = "Estas comiendo pinga, es solo un valor weeeoooon x 3."
+      error_message = "Please you need to set  only one variable."
     }
   }
 
@@ -193,7 +193,6 @@ resource "azuread_group" "main" {
 }
 
 resource "azuread_app_role_assignment" "main" {
-
   depends_on = [azuread_application.main,azuread_group.main]
   for_each = local.groups-roles-app-map
     app_role_id         = azuread_application.main.app_role_ids["${var.display_name}_${each.value.role}"]

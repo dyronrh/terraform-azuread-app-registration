@@ -162,20 +162,20 @@ variable "group_names" {
 
 
 variable "id_domain" {
-  description = "(Required) Domain name of IT- Element"  
+  description = "(Optional) Domain name of the resource, if set this variable you can´t set sub_domain or it_element"  
   type = string
   default = null
 }
 
 variable "sub_domain" {
-  description = "(Required) Domain name of IT- Element"  
+  description = "(Optional) Domain name of the resource, if set this variable you can´t set id_domain or it_element"  
   type = string
   default = null
 }
 
 
 variable "it_element" {
-  description = "(Optional) It Element value for this app"
+  description = "(Optional) It Element  of the resource, if set this variable you can´t set id_domain or sub_domain"
   type = string
   default = null
 }
